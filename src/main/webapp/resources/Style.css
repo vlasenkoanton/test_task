@@ -1,0 +1,80 @@
+body {
+    margin: 0;
+    min-width: 900px;
+}
+
+header {
+    width: auto;
+    height: 60px;
+    background-color: #F1F1F1;
+}
+
+input {
+    padding: 0 10px;
+    border: 1px solid #D9D9D9;
+    margin: 11px 0 0 130px;
+    height: 38px;
+    width: 630px;
+}
+
+button {
+    margin: 0;
+    height: 38px;
+}
+
+menu {
+    margin: 0 0 52px 0;
+    padding: 0;
+    width: auto;
+    height: 60px;
+    border-bottom: 1px solid #F1F1F1;
+}
+
+menu ul {
+    margin: 0 0 0 130px;
+    padding: 0;
+}
+
+menu ul li {
+    padding-top: 20px;
+    margin: 0 32px 0 0;      
+    float: left;     
+    list-style-type: none;
+}
+
+.menu_link {    
+    font-size: 16px;
+    color: #777777; 
+}
+
+p {
+    padding: 0;
+    margin: 0;
+}
+a {
+    text-decoration: none;
+    color: #1A58C7;    
+    font-size: 20px;
+}
+
+a:hover, a:focus {
+    text-decoration: underline;
+}
+
+a:visited {
+    color: #660099;
+    text-decoration: none;
+}
+
+.link_p {
+    margin-bottom: 30px;
+    color: #006621;
+}
+
+#wrapper {
+    margin: 0 0 0 130px;
+}
+
+.perform_index {
+    margin: 0 0 0 130px;
+}
