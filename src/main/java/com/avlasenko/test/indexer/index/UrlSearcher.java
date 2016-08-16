@@ -8,12 +8,15 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
+import org.apache.lucene.search.highlight.*;
 import org.apache.lucene.store.FSDirectory;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.avlasenko.test.indexer.index.IndexSearchProperties.*;
 
 /**
  * Created by A. Vlasenko on 16.08.2016.
@@ -43,9 +46,29 @@ public class UrlSearcher {
 
         for (ScoreDoc hit : hits) {
             Document d = searcher.doc(hit.doc);
-            result.add(new SearchResult(d.get(UrlDocumentIndexer.URL), d.get(UrlDocumentIndexer.TITLE)));
+            String urlText = d.get(UrlDocumentIndexer.URL);
+            String titleText = d.get(UrlDocumentIndexer.TITLE);
+            String contentText = d.get(UrlDocumentIndexer.CONTENTS);
+
+            String fragmentText = null;
+            try {
+                fragmentText = getHighlightedFragment(query, analyzer, UrlDocumentIndexer.CONTENTS, contentText);
+            } catch (InvalidTokenOffsetsException e) {
+                fragmentText = "";
+            }
+
+            result.add(new SearchResult(urlText, titleText, fragmentText));
         }
 
         return result;
+    }
+
+    private String getHighlightedFragment(Query query, Analyzer analyzer, String fieldName, String fieldValue) throws IOException, InvalidTokenOffsetsException {
+        Formatter formatter = new SimpleHTMLFormatter("<span class=\"highlited\">", "</span>");
+        QueryScorer queryScorer = new QueryScorer(query);
+        Highlighter highlighter = new Highlighter(formatter, queryScorer);
+        highlighter.setTextFragmenter(new SimpleSpanFragmenter(queryScorer, FRAGMENT_LENGTH));
+        highlighter.setMaxDocCharsToAnalyze(Integer.MAX_VALUE);
+        return highlighter.getBestFragment(analyzer, fieldName, fieldValue);
     }
 }

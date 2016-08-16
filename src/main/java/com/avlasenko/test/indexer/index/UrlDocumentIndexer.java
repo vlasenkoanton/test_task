@@ -100,7 +100,7 @@ public class UrlDocumentIndexer {
     private void indexFile(IndexWriter indexWriter, String source, String link, String title) throws IOException {
         Document document = new Document();
 
-        document.add(new TextField(CONTENTS, new StringReader(source)));
+        document.add(new TextField(CONTENTS, source, Field.Store.YES));
         document.add(new StringField(URL, link, Field.Store.YES));
         document.add(new StringField(TITLE, title, Field.Store.YES));
 

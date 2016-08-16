@@ -27,6 +27,7 @@
     <c:forEach items="${results}" var="result">
         <p><a href="${result.link}" id="title">${result.title}</a></p>
         <p class="link_p">${result.link}</p>
+        <p class="link_fragment">${result.fragment}</p>
     </c:forEach>
 </div>
 
