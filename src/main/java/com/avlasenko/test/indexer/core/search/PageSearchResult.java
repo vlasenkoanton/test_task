@@ -1,14 +1,14 @@
-package com.avlasenko.test.indexer.index;
+package com.avlasenko.test.indexer.core.search;
 
 /**
  * Created by A. Vlasenko on 16.08.2016.
  */
-public class SearchResult {
+public class PageSearchResult {
     private String link;
     private String title;
     private String fragment;
 
-    SearchResult(String link, String title, String fragment) {
+    PageSearchResult(String link, String title, String fragment) {
         this.link = link;
         this.title = title;
         this.fragment = fragment;

@@ -1,17 +1,16 @@
 package com.avlasenko.test.indexer.service;
 
-import com.avlasenko.test.indexer.index.SearchResult;
-import com.avlasenko.test.indexer.index.UrlDocumentIndexer;
-import com.avlasenko.test.indexer.index.UrlSearcher;
-import org.apache.lucene.queryparser.classic.ParseException;
+import com.avlasenko.test.indexer.core.Page;
+import com.avlasenko.test.indexer.core.index.IndexProps;
+import com.avlasenko.test.indexer.core.index.Indexer;
+import com.avlasenko.test.indexer.core.index.PageIndexer;
+import com.avlasenko.test.indexer.core.search.PageSearchResult;
+import com.avlasenko.test.indexer.core.search.PageSearcher;
+import com.avlasenko.test.indexer.core.search.SearchProps;
 import org.apache.lucene.search.Sort;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
-
-import static com.avlasenko.test.indexer.index.IndexSearchProperties.*;
 
 /**
  * Created by A. Vlasenko on 16.08.2016.
@@ -19,22 +18,15 @@ import static com.avlasenko.test.indexer.index.IndexSearchProperties.*;
 @Service
 public class IndexerServiceImpl implements IndexerService {
 
-    public List<SearchResult> search(String query, Sort sort) {
-        UrlSearcher searcher = new UrlSearcher(INDEX_DIR, MAX_HITS);
-        try {
-            return searcher.search(query, sort);
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
-        }
-        return Collections.emptyList();
+    @Override
+    public List<PageSearchResult> search(String query, Sort sort) {
+        PageSearcher searcher = new PageSearcher(IndexProps.INDEX_DIR, SearchProps.MAX_HITS);
+        return searcher.search(query, sort);
     }
 
+    @Override
     public void index(String url, int depth) {
-        UrlDocumentIndexer indexer = new UrlDocumentIndexer(INDEX_DIR);
-        try {
-            indexer.recursiveIndex(url, depth);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Indexer indexer = new PageIndexer(new Page(url), IndexProps.INDEX_DIR);
+        indexer.recursiveIndex(depth);
     }
 }

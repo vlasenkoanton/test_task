@@ -1,1 +1,2 @@
-To change index-search properties please see IndexSearchProperties class.
+1. To change index-search properties please see IndexProps and SearchProps classes.
+2. ATTENTION! Using default properties indexes are saving in directory "filesystem"/indexes. To change this property see IndexProps class.
