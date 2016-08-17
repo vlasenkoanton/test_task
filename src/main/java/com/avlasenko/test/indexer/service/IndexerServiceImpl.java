@@ -4,6 +4,7 @@ import com.avlasenko.test.indexer.index.SearchResult;
 import com.avlasenko.test.indexer.index.UrlDocumentIndexer;
 import com.avlasenko.test.indexer.index.UrlSearcher;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.search.Sort;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -18,10 +19,10 @@ import static com.avlasenko.test.indexer.index.IndexSearchProperties.*;
 @Service
 public class IndexerServiceImpl implements IndexerService {
 
-    public List<SearchResult> search(String query) {
+    public List<SearchResult> search(String query, Sort sort) {
         UrlSearcher searcher = new UrlSearcher(INDEX_DIR, MAX_HITS);
         try {
-            return searcher.search(query);
+            return searcher.search(query, sort);
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }

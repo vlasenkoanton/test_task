@@ -22,10 +22,32 @@
         <li><a href="fake" class="menu_link">Еще</a></li>
         <li><a href="fake" class="menu_link">Интсрументы поиска</a></li>
     </ul>
+    <div id="reset"></div>
 </menu>
+<form name="sort_form" method="POST">
+    <input type="hidden" name="sort">
+    <input class="sort_button" type="button" value="Relevance" onclick="button1()">
+    <input class="sort_button" type="button" value="Alphabetic" onclick="button2()">
+    <input class="sort_button" type="button" value="Normal" onclick="button3()">
+</form>
+<script language="JavaScript">
+    function button1() {
+        document.sort_form.sort.value = "relevance"
+        document.sort_form.submit()
+    }
+    function button2() {
+        document.sort_form.sort.value = "alphabetic"
+        document.sort_form.submit()
+    }
+    function button3() {
+        document.sort_form.sort.value = "normal"
+        document.sort_form.submit()
+    }
+</script>
 <div id="wrapper">
     <c:forEach items="${results}" var="result">
-        <p><a href="${result.link}" id="title">${result.title}</a></p>
+        <p><a href="${result.link}"
+              id="title">${result.title.length() gt 100 ? result.title.substring(0, 100) : result.title}</a></p>
         <p class="link_p">${result.link}</p>
         <p class="link_fragment">${result.fragment}</p>
     </c:forEach>

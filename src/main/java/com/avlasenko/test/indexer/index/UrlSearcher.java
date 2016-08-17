@@ -30,7 +30,7 @@ public class UrlSearcher {
         this.maxHits = maxHits;
     }
 
-    public List<SearchResult> search(String queryString) throws IOException, ParseException {
+    public List<SearchResult> search(String queryString, Sort sort) throws IOException, ParseException {
         List<SearchResult> result = new ArrayList<>();
 
         IndexReader reader = DirectoryReader.open(FSDirectory.open(indexDirectory));
@@ -41,7 +41,7 @@ public class UrlSearcher {
         QueryParser parser = new QueryParser(UrlDocumentIndexer.CONTENTS, analyzer);
         Query query = parser.parse(queryString);
 
-        TopDocs topDocs = searcher.search(query, maxHits, Sort.RELEVANCE);
+        TopDocs topDocs = searcher.search(query, maxHits, sort);
         ScoreDoc[] hits = topDocs.scoreDocs;
 
         for (ScoreDoc hit : hits) {

@@ -8,12 +8,11 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
+import org.apache.lucene.util.BytesRef;
 import org.jsoup.nodes.*;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.io.StringReader;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,6 +24,7 @@ public class UrlDocumentIndexer {
     static final String CONTENTS = "contents";
     static final String URL = "url";
     static final String TITLE = "title";
+    static final String TITLE_SORT = "titleSort";
 
     private final Path indexDirectory;
 
@@ -99,10 +99,12 @@ public class UrlDocumentIndexer {
 
     private void indexFile(IndexWriter indexWriter, String source, String link, String title) throws IOException {
         Document document = new Document();
+        System.out.println(title);
 
         document.add(new TextField(CONTENTS, source, Field.Store.YES));
         document.add(new StringField(URL, link, Field.Store.YES));
         document.add(new StringField(TITLE, title, Field.Store.YES));
+        document.add(new SortedDocValuesField(TITLE_SORT, new BytesRef(title.getBytes())));
 
         indexWriter.addDocument(document);
     }

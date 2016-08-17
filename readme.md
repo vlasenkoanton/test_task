@@ -1,0 +1,1 @@
+To change index-search properties please see IndexSearchProperties class.

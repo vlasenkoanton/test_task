@@ -1,3 +1,7 @@
+#reset {
+    float: none;
+}
+
 body {
     margin: 0;
     min-width: 900px;
@@ -30,6 +34,14 @@ menu {
     border-bottom: 1px solid #F1F1F1;
 }
 
+.sort_button {
+    font-size: 10px;
+    width: 55px;
+    height: 20px;
+    margin: 0 0 0 130px;
+    padding: 0;
+}
+
 menu ul {
     margin: 0 0 0 130px;
     padding: 0;
@@ -50,6 +62,7 @@ menu ul li {
 p {
     padding: 0;
     margin: 0;
+    max-width: 580px;
 }
 a {
     text-decoration: none;
@@ -66,9 +79,12 @@ a:visited {
     text-decoration: none;
 }
 
-.link_p {
-    margin-bottom: 30px;
+.link_p {    
     color: #006621;
+}
+
+.link_fragment {
+    margin-bottom: 30px;
 }
 
 #wrapper {
@@ -77,4 +93,9 @@ a:visited {
 
 .perform_index {
     margin: 0 0 0 130px;
+}
+
+.highlited {
+    background-color: yellow;
+    font-weight: bold;
 }

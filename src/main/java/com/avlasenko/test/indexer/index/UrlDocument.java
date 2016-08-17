@@ -10,19 +10,19 @@ import java.io.IOException;
 /**
  * Created by A. Vlasenko on 15.08.2016.
  */
-public class UrlDocument {
+class UrlDocument {
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) " +
             "Chrome/45.0.2454.85 Safari/537.36";
 
     private final Document document;
     private final String url;
 
-    public UrlDocument(String url) throws IOException {
+    UrlDocument(String url) throws IOException {
         this.url = url;
         this.document = Jsoup.connect(url).userAgent(USER_AGENT).get();
     }
 
-    public String parseToString() {
+    String parseToString() {
         Elements elements = document.getAllElements();
 
         StringBuilder sb = new StringBuilder();
@@ -32,11 +32,15 @@ public class UrlDocument {
         return sb.toString();
     }
 
-    public String getTitle() throws IOException {
-        return document.getElementsByTag("title").text();
+    String getTitle() throws IOException {
+        Elements titles = document.getElementsByTag("title");
+        if (titles != null && !titles.isEmpty()) {
+            return titles.get(0).text().trim();
+        }
+        return "No title";
     }
 
-    public Document getDocument() {
+    Document getDocument() {
         return document;
     }
 
