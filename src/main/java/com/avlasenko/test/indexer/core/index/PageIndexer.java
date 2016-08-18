@@ -70,8 +70,7 @@ public class PageIndexer implements Indexer {
         try (IndexWriter indexWriter = getIndexWriter()) {
             indexPage(indexWriter, page);
             indexWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ignored) {
         }
     }
 

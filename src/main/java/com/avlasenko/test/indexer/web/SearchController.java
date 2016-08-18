@@ -23,7 +23,7 @@ public class SearchController {
     private IndexerService service;
 
     @RequestMapping
-    public String sort(@RequestParam String q, @RequestParam(required = false) String sort, Model model) {
+    public String search(@RequestParam String q, @RequestParam(required = false) String sort, Model model) {
         List<PageSearchResult> results;
         if (sort == null) {
             results = service.search(q, Sorting.RELEVANCE);

@@ -18,7 +18,7 @@ public class IndexController {
     private IndexerService service;
 
     @RequestMapping(method = RequestMethod.GET)
-    public String core() {
+    public String index() {
         return "linkIndex";
     }
 
