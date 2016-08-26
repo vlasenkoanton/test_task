@@ -10,9 +10,8 @@ import org.apache.lucene.util.BytesRef;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * Created by A. Vlasenko on 17.08.2016.
@@ -23,13 +22,20 @@ public class PageIndexer implements Indexer {
     public static final String TITLE = "title";
     public static final String TITLE_SORT = "titleSort";
 
-    private Page page;
+    private Page startPage;
     private Path indexDirectory;
-    private Set<String> indexedLinks = new HashSet<>();
 
-    public PageIndexer(Page page, Path indexDirectory) {
-        this.page = page;
+    public PageIndexer(Page startPage, Path indexDirectory) {
+        this.startPage = startPage;
         this.indexDirectory = indexDirectory;
+    }
+
+    public void index() {
+        try (IndexWriter writer = getIndexWriter()) {
+            indexPage(writer, startPage);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -37,45 +43,55 @@ public class PageIndexer implements Indexer {
         if (depth == 0) {
             index();
         } else if (depth < 0) {
-            throw new IllegalArgumentException("\"depth\" should be >= 0");
+            throw new IllegalArgumentException("Depth must be >= 0");
+        } else {
+            try (IndexWriter writer = getIndexWriter()) {
+                Set<Page> pages = new HashSet<>();
+                ExecutorService executor = Executors.newFixedThreadPool(8);
+                pages.add(startPage);
+                indexPage(writer, startPage);
+
+                for (int i = 0; i < depth; i++) {
+                    List<Future<Page>> tasks = pageLoadTasks(pages, executor);
+                    indexTasksResults(tasks, pages, writer);
+                }
+                executor.shutdown();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
-        try (IndexWriter writer = getIndexWriter()) {
-            Set<String> links = new CopyOnWriteArraySet<>();
-            links.add(page.getUrl());
-
-            for (int i = 0; i <= depth; i++) {
+    }
+    //indexes all loaded pages
+    private void indexTasksResults(Collection<Future<Page>> tasks, Set<Page> pages, IndexWriter writer) {
+        for (Future<Page> f : tasks) {
+            try {
+                Page page = f.get();
+                if (page != null && !pages.contains(page)) {
+                    indexPage(writer, page);
+                    pages.add(page);
+                }
+            } catch (ExecutionException | IOException | InterruptedException ignored) {
+            }
+        }
+    }
+    //Loads all pages need to be indexed in future
+    private List<Future<Page>> pageLoadTasks(Set<Page> pages, ExecutorService executor) {
+        Set<Page> temp = new HashSet<>(pages);
+        List<Future<Page>> futures = new LinkedList<>();
+        for (Page p : temp) {
+            try {
+                Set<String> links = p.getLinks();
                 for (String link : links) {
-                    try {
-                        Page p = new Page(link);
-                        if (i != depth) {
-                            links.addAll(p.getLinks());
-                        }
-                        if (!indexedLinks.contains(link)) {
-                            indexPage(writer, p);
-                            indexedLinks.add(link);
-                        }
-                    } catch (IOException ignored) {
-                        //skip all inaccessible and incompatible pages(e.g. pdf files)
+                    Page p1 = new Page(link);
+                    if (!pages.contains(p1)) {
+                        //uses multithreading page loading as it is the most expensive operation
+                        futures.add(executor.submit(new PageLoader(p1)));
                     }
                 }
+            } catch (IOException ignored) {
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-    }
-
-    @Override
-    public void index() {
-        try (IndexWriter indexWriter = getIndexWriter()) {
-            indexPage(indexWriter, page);
-            indexWriter.close();
-        } catch (IOException ignored) {
-        }
-    }
-
-    public Set<String> getIndexedLinks() {
-        return indexedLinks;
+        return futures;
     }
 
     private void indexPage(IndexWriter writer, Page page) throws IOException {
@@ -95,8 +111,9 @@ public class PageIndexer implements Indexer {
     }
 
     private IndexWriter getIndexWriter() throws IOException {
+        FSDirectory directory = FSDirectory.open(indexDirectory);
         IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer());
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
-        return new IndexWriter(FSDirectory.open(indexDirectory), config);
+        return new IndexWriter(directory, config);
     }
 }
