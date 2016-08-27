@@ -1,6 +1,5 @@
 package com.avlasenko.test.indexer.service;
 
-import com.avlasenko.test.indexer.core.Page;
 import com.avlasenko.test.indexer.core.index.IndexProps;
 import com.avlasenko.test.indexer.core.index.Indexer;
 import com.avlasenko.test.indexer.core.index.PageIndexer;
@@ -26,7 +25,7 @@ public class IndexerServiceImpl implements IndexerService {
 
     @Override
     public void index(String url, int depth) {
-        Indexer indexer = new PageIndexer(new Page(url), IndexProps.INDEX_DIR);
+        Indexer indexer = new PageIndexer(url, IndexProps.INDEX_DIR);
         indexer.recursiveIndex(depth);
     }
 }

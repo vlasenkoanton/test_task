@@ -16,15 +16,13 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.avlasenko.test.indexer.core.index.PageIndexer.*;
+import static com.avlasenko.test.indexer.core.index.IndexProps.*;
+import static com.avlasenko.test.indexer.core.search.SearchProps.RESULT_FRAGMENT_LENGTH;
 
 /**
  * Created by A. Vlasenko on 16.08.2016.
  */
 public class PageSearcher implements Searcher<PageSearchResult> {
-    //length of highlighted search fragment. Can be changed by "PageSearcher.setFragmentLength()"
-    private static int FRAGMENT_LENGTH = 100;
-
     private Path indexDirectory;
     private int maxHits;
 
@@ -52,7 +50,7 @@ public class PageSearcher implements Searcher<PageSearchResult> {
                 Document d = searcher.doc(hit.doc);
                 String urlText = d.get(URL);
                 String titleText = d.get(TITLE);
-                String fragmentText = null;
+                String fragmentText;
 
                 try {
                     String contentText = d.get(CONTENTS);
@@ -69,17 +67,13 @@ public class PageSearcher implements Searcher<PageSearchResult> {
         return result;
     }
 
-    public static void setFragmentLength(int fragmentLength) {
-        FRAGMENT_LENGTH = fragmentLength;
-    }
-
     private String getHighlightedFragment(Query query, Analyzer analyzer, String fieldName, String fieldValue)
             throws IOException, InvalidTokenOffsetsException {
 
         Formatter formatter = new SimpleHTMLFormatter("<span class=\"highlited\">", "</span>");
         QueryScorer queryScorer = new QueryScorer(query);
         Highlighter highlighter = new Highlighter(formatter, queryScorer);
-        highlighter.setTextFragmenter(new SimpleSpanFragmenter(queryScorer, FRAGMENT_LENGTH));
+        highlighter.setTextFragmenter(new SimpleSpanFragmenter(queryScorer, RESULT_FRAGMENT_LENGTH));
         highlighter.setMaxDocCharsToAnalyze(Integer.MAX_VALUE);
         return highlighter.getBestFragment(analyzer, fieldName, fieldValue);
     }

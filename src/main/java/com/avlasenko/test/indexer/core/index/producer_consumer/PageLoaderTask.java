@@ -1,4 +1,4 @@
-package com.avlasenko.test.indexer.core.index;
+package com.avlasenko.test.indexer.core.index.producer_consumer;
 
 import com.avlasenko.test.indexer.core.Page;
 
@@ -8,12 +8,13 @@ import java.util.concurrent.Callable;
 /**
  * Created by A. Vlasenko on 26.08.2016.
  */
-//task for page loading(Json document loading)
-class PageLoader implements Callable<Page> {
+//Jsoup page(url document) loading is the most expensive part of application
+// thus it is performing in separate threads
+class PageLoaderTask implements Callable<Page> {
 
     private Page page;
 
-    PageLoader(Page page) {
+    PageLoaderTask(Page page) {
         this.page = page;
     }
 

@@ -18,6 +18,8 @@ public class Page {
 
     private final String url;
     private Document document;
+    //variable for control page depth. Page of deeper level has bigger generation
+    private int generation = 0;
 
     public Page(String url) {
         if (url == null || url.isEmpty()) {
@@ -39,22 +41,28 @@ public class Page {
         }
         return "No title";
     }
-
-    public Set<String> getLinks() throws IOException {
+    //Parses page Jsoup document, find all internal links and
+    // creates lightweight(without document loading) pages on their basis
+    public Set<Page> getInternalPages() throws IOException {
         loadDocument();
-        Set<String> links = new HashSet<>();
+        Set<Page> pages = new HashSet<>();
 
         Elements elements = document.getElementsByTag("a");
         if (!elements.isEmpty()) {
             for (Element element : elements) {
                 boolean nofollow = element.attr("rel").equalsIgnoreCase("nofollow");
                 String href = element.attr("href");
-                if (!nofollow && href.startsWith("http") && !links.contains(href)) {
-                    links.add(href);
+                if (!nofollow && href.startsWith("http")) {
+                    Page p = new Page(href);
+                    if (!pages.contains(p)) {
+                        //parent page sets next generation to all children pages
+                        p.setGeneration(this.generation + 1);
+                        pages.add(p);
+                    }
                 }
             }
         }
-        return links;
+        return pages;
     }
 
     public Document getDocument() throws IOException {
@@ -64,6 +72,14 @@ public class Page {
 
     public String getUrl() {
         return url;
+    }
+
+    private void setGeneration(int generation) {
+        this.generation = generation;
+    }
+
+    public int getGeneration() {
+        return generation;
     }
 
     public void loadDocument() throws IOException {
