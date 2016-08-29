@@ -36,7 +36,7 @@ public class PageIndexConsumer implements Runnable {
     @Override
     public void run() {
         try (IndexWriter writer = getIndexWriter()) {
-            while (!end) {
+            while (!end || !tasks.isEmpty()) {
                 Future<Page> future = tasks.poll();
                 if (future != null) {
                     Page page = future.get();
@@ -72,11 +72,7 @@ public class PageIndexConsumer implements Runnable {
         return new IndexWriter(directory, config);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     public void end() {
-        //PageIndexConsumer can't be stopped while all tasks haven't been completed
-        while (!tasks.isEmpty()) {
-        }
         this.end = true;
     }
 }
