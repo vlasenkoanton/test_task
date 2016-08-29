@@ -31,8 +31,8 @@ public class PageIndexer implements Indexer {
         if (depth < 0) {
             throw new IllegalArgumentException("Depth can't be < 0");
         } else {
-            ExecutorService executor = Executors.newFixedThreadPool(POOL_SIZE);
-            BlockingQueue<Future<Page>> indexTasks = new ArrayBlockingQueue<>(16);
+            ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(POOL_SIZE);
+            BlockingQueue<Future<Page>> indexTasks = new ArrayBlockingQueue<>(64);
             //PageIndexConsumer should be started first because it will use results
             // provided by PageIndexProducer one by one as soon as they become available
             PageIndexConsumer pageIndexConsumer = new PageIndexConsumer(indexTasks, indexDirectory);

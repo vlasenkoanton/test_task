@@ -84,7 +84,7 @@ public class Page {
 
     public void loadDocument() throws IOException {
         if (document == null) {
-            this.document = Jsoup.connect(url).userAgent(USER_AGENT).timeout(3000).get();
+            this.document = Jsoup.connect(url).userAgent(USER_AGENT).get();
         }
     }
 

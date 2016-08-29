@@ -21,10 +21,12 @@ import static com.avlasenko.test.indexer.core.index.IndexProps.*;
  */
 //gradually uses tasks provided by PageIndexProducer and indexes results(loaded pages) of this tasks
 public class PageIndexConsumer implements Runnable {
+
     private final BlockingQueue<Future<Page>> tasks;
+    private final Path indexDirectory;
+
     //uses as a way to stop running PageIndexConsumer
     private volatile boolean end = false;
-    private final Path indexDirectory;
 
     public PageIndexConsumer(BlockingQueue<Future<Page>> tasks, Path indexDirectory) {
         this.tasks = tasks;
@@ -35,10 +37,13 @@ public class PageIndexConsumer implements Runnable {
     public void run() {
         try (IndexWriter writer = getIndexWriter()) {
             while (!end) {
-                Page page = tasks.take().get();
-                if (page != null) {
-                    indexPage(writer, page);
-                    System.out.println("Page has been indexed: "+page.getUrl());
+                Future<Page> future = tasks.poll();
+                if (future != null) {
+                    Page page = future.get();
+                    if (page != null) {
+                        indexPage(writer, page);
+                        System.out.println("Page has been indexed: " + page.getUrl());
+                    }
                 }
             }
         } catch (IOException | InterruptedException | ExecutionException e) {
