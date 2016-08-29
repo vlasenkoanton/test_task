@@ -41,8 +41,7 @@ class PageLoaderTask implements Callable<Page> {
                             pages.putLast(p);
                         }
                     }
-                } catch (IOException | InterruptedException e) {
-                    System.out.println("ignored" + e.getMessage());
+                } catch (IOException | InterruptedException ignored) {
                 }
             }
             return page;
